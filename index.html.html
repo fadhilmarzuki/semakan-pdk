@@ -432,6 +432,13 @@
                 loadingContainer.style.display = 'none';
 
                 if (searchResults && searchResults.length > 0) {
+                    // Sort results alphabetically by "JENIS PRODUK"
+                    searchResults.sort((a, b) => {
+                        const typeA = (a["JENIS PRODUK"] || "").toUpperCase();
+                        const typeB = (b["JENIS PRODUK"] || "").toUpperCase();
+                        return typeA.localeCompare(typeB);
+                    });
+
                     if (searchResults.length === 1) {
                         displayDetail(0);
                     } else {
@@ -460,9 +467,9 @@
             results.forEach((data, index) => {
                 html += `
                 <div class="list-item" onclick="displayDetail(${index})">
-                    <span class="item-title">${data["JENAMA PRODUK"] || 'Tiada Jenama'}</span>
+                    <span class="item-title">${data["JENIS PRODUK"] || 'Tiada Jenis'}</span>
                     <span class="item-subtitle">No. Pendaftaran: ${data["NO. PENDAFTARAN PRODUK"] || '-'}</span>
-                    <span class="item-subtitle">Jenis Produk: ${data["JENIS PRODUK"] || '-'}</span>
+                    <span class="item-subtitle">Jenama: ${data["JENAMA PRODUK"] || '-'}</span>
                 </div>
             `;
             });
