@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Semakan Produk Merokok PDK</title>
+    <!-- Dependencies -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #28a745;
+            --accent-color: #ffc107;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border-top: 10px solid var(--primary-color);
+            position: relative;
+        }
+
+        /* Branding Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #edf2f7;
+            padding-bottom: 20px;
+        }
+
+        .header img {
+            width: 90px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin: 10px 0 0 0;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .branding-text-primary {
+            font-weight: 700;
+            font-size: 16px;
+            color: #000;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .branding-text-secondary {
+            font-weight: 600;
+            font-size: 14px;
+            color: #444;
+            text-transform: uppercase;
+        }
+
+        /* Search Controls */
+        .search-box {
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            background: #f8fafc;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 51, 102, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-search {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 51, 102, 0.2);
+        }
+
+        .btn-back {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results List */
+        #list-container {
+            display: none;
+            margin-top: 20px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .list-item {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .list-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: #f8fafc;
+        }
+
+        .list-item .item-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 15px;
+        }
+
+        .list-item .item-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Detailed Results Card */
+        #result-container {
+            padding: 25px;
+            border-radius: 15px;
+            background: #fdfdfd;
+            display: none;
+            border: 1px solid #eef2f7;
+            position: relative;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .result-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-aktif {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-tidak {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 480px) {
+            .data-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .data-item {
+            padding: 10px;
+            background: #fff;
+            border-radius: 8px;
+            border-left: 3px solid #e2e8f0;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-box {
+            margin-top: 20px;
+            padding: 12px;
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 8px;
+            color: #92400e;
+            font-size: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        /* Loading Container */
+        #loading-container {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 51, 102, 0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 11px;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Coat_of_arms_of_Malaysia.svg/250px-Coat_of_arms_of_Malaysia.svg.png"
+                alt="Jata Negara" crossorigin="anonymous"
+                onerror="this.src='https://malaysia.gov.my/img/jata_negara.png'">
+            <div class="branding-text-primary">KEMENTERIAN KESIHATAN MALAYSIA</div>
+            <div class="branding-text-secondary">JABATAN KESIHATAN NEGERI KEDAH</div> <br>
+            <h1>Sistem Semakan Produk Merokok</h1>
+        </div>
+
+        <form class="search-box" onsubmit="event.preventDefault(); searchData();">
+            <div class="input-group">
+                <input type="text" id="searchInput" placeholder="Cari Jenama atau No. Pendaftaran..."
+                    enterkeyhint="search" autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-search">
+                <span>🔍</span> CARI MAKLUMAT
+            </button>
+        </form>
+
+        <div id="error-message"
+            style="display: none; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px;">
+            <strong>Ralat:</strong> <span id="error-text"></span>
+            <div style="margin-top: 10px; font-size: 12px; font-style: italic;">
+                Nota: Jika anda menggunakan iPhone/Mobile, pastikan aplikasi ini diakses melalui pautan
+                <strong>HTTPS</strong>.
+            </div>
+        </div>
+
+        <div id="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Carian Sedang Dilakukan. Sila Tunggu...</p>
+        </div>
+
+        <!-- Multiple Results Section -->
+        <div id="list-container">
+            <h3 style="color: var(--primary-color); font-size: 16px; margin-bottom: 15px;">Padanan Produk Ditemui:</h3>
+            <div id="listContent"></div>
+        </div>
+
+        <!-- Single Result Section -->
+        <div id="result-container">
+            <button class="btn btn-back" id="backBtn" onclick="showList()">
+                <span>⬅️</span> KEMBALI KE SENARAI
+            </button>
+            <div class="result-header">
+                <h3>Hasil Semakan</h3>
+                <div id="statusBadge" class="status-badge">Memproses...</div>
+            </div>
+            <div id="resultContent" class="data-grid">
+                <!-- Data will be injected here -->
+            </div>
+            <div class="alert-box">
+                <span>⚠️</span>
+                <span>Sila pastikan maklumat di atas sepadan dengan rekod fizikal atau surat kelulusan asal.</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            HAKCIPTA JABATAN KESIHATAN NEGERI KEDAH 2026
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbwo3G5LMG7RiULzPloHloZ_7P6X8WkgacM6a_dYKsa9wcIfHBJbD7RLAEtL0wsVl_A22w/exec";
+        // ^^^ TAMPAL URL WEB APP ANDA DI ATAS ^^^
+
+        let searchResults = [];
+
+        async function searchData() {
+            const query = document.getElementById('searchInput').value.trim();
+            const listContainer = document.getElementById('list-container');
+            const resultContainer = document.getElementById('result-container');
+            const loadingContainer = document.getElementById('loading-container');
+            const errorContainer = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+
+            if (!query) {
+                alert("Sila masukkan maklumat carian.");
+                return;
+            }
+
+            // Reset UI
+            listContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            loadingContainer.style.display = 'block';
+            errorContainer.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_URL}?q=${encodeURIComponent(query)}`);
+
+                if (!response.ok) {
+                    throw new Error(`Respons Server: ${response.status} ${response.statusText}`);
+                }
+
+                searchResults = await response.json();
+
+                loadingContainer.style.display = 'none';
+
+                if (searchResults && searchResults.length > 0) {
+                    if (searchResults.length === 1) {
+                        displayDetail(0);
+                    } else {
+                        displayList(searchResults);
+                    }
+                } else {
+                    alert("Tiada data ditemui untuk carian tersebut.");
+                }
+            } catch (error) {
+                loadingContainer.style.display = 'none';
+                console.error("Error fetching data:", error);
+
+                // Show on-screen error for better mobile debugging
+                errorContainer.style.display = 'block';
+                errorText.innerText = "Gagal menghubungi pangkalan data. " + error.message;
+
+                alert("Ralat sambungan database. Sila pastikan anda mempunyai akses internet dan menggunakan pautan tapak web yang betul.");
+            }
+        }
+
+        function displayList(results) {
+            const listContent = document.getElementById('listContent');
+            const listContainer = document.getElementById('list-container');
+
+            let html = "";
+            results.forEach((data, index) => {
+                html += `
+                <div class="list-item" onclick="displayDetail(${index})">
+                    <span class="item-title">${data["JENAMA PRODUK"] || 'Tiada Jenama'}</span>
+                    <span class="item-subtitle">No. Pendaftaran: ${data["NO. PENDAFTARAN PRODUK"] || '-'}</span>
+                    <span class="item-subtitle">Jenis Produk: ${data["JENIS PRODUK"] || '-'}</span>
+                </div>
+            `;
+            });
+
+            listContent.innerHTML = html;
+            listContainer.style.display = 'block';
+        }
+
+        function displayDetail(index) {
+            const data = searchResults[index];
+            const listContainer = document.getElementById('list-container');
+            const resultContainer = document.getElementById('result-container');
+            const resultContent = document.getElementById('resultContent');
+            const statusBadge = document.getElementById('statusBadge');
+            const backBtn = document.getElementById('backBtn');
+
+            listContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+
+            // Hanya tunjuk butang kembali jika ada lebih dari 1 hasil
+            backBtn.style.display = searchResults.length > 1 ? 'flex' : 'none';
+
+            // Update status badge
+            const statusStr = (data["STATUS_KELULUSAN"] || "").toUpperCase();
+            statusBadge.innerText = statusStr || "TIADA REKOD";
+            statusBadge.className = `status-badge ${statusStr.includes('LULUS') || statusStr.includes('AKTIF') ? 'status-aktif' : 'status-tidak'}`;
+
+            // Build exhaustive data grid
+            let html = "";
+            const displayHeaders = [
+                "NO. PENDAFTARAN PRODUK", "JENAMA PRODUK", "STATUS_KELULUSAN",
+                "JENIS PRODUK", "KATEGORI PRODUK", "BENTUK PRODUK",
+                "HARGA RUNCIT PER PAKET (RM)", "HARGA RUNCIT PER KARTON (RM)",
+                "TARIKH SURAT KUATKUASA", "NO. SURAT", "STATUS BAYARAN",
+                "ISI PADU (ML) / BERAT (GM)", "KEPEKATAN NIKOTIN (MG/ML)",
+                "NAMA SYARIKAT", "ALAMAT SYARIKAT", "PEMOHON"
+            ];
+
+            displayHeaders.forEach(header => {
+                if (data[header] !== undefined) {
+                    html += `
+                    <div class="data-item">
+                        <span class="data-label">${header}</span>
+                        <span class="data-value">${data[header] || '-'}</span>
+                    </div>
+                `;
+                }
+            });
+
+            resultContent.innerHTML = html;
+            window.scrollTo({ top: resultContainer.offsetTop - 20, behavior: 'smooth' });
+        }
+
+        function showList() {
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('list-container').style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>
