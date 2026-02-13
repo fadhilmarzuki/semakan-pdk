@@ -148,6 +148,54 @@
             transform: translateY(0);
         }
 
+        /* Inline Message */
+        .inline-message {
+            display: none;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            animation: fadeIn 0.4s ease-out;
+            text-align: center;
+        }
+
+        .inline-info {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .inline-warning {
+            background-color: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fef3c7;
+        }
+
+        .inline-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+            font-weight: 700;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
         /* Results List */
         #list-container {
             display: none;
@@ -351,6 +399,9 @@
             </button>
         </form>
 
+        <!-- Inline Search Notice / Results Tip -->
+        <div id="inline-notice" class="inline-message"></div>
+
         <div id="error-message"
             style="display: none; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px;">
             <strong>Ralat:</strong> <span id="error-text"></span>
@@ -408,17 +459,23 @@
             const loadingContainer = document.getElementById('loading-container');
             const errorContainer = document.getElementById('error-message');
             const errorText = document.getElementById('error-text');
-
-            if (!query) {
-                alert("Sila masukkan maklumat carian.");
-                return;
-            }
+            const inlineNotice = document.getElementById('inline-notice');
 
             // Reset UI
             listContainer.style.display = 'none';
             resultContainer.style.display = 'none';
-            loadingContainer.style.display = 'block';
             errorContainer.style.display = 'none';
+            inlineNotice.style.display = 'none';
+            inlineNotice.className = 'inline-message';
+
+            if (!query) {
+                inlineNotice.innerText = "Sila masukkan maklumat carian.";
+                inlineNotice.classList.add('inline-warning');
+                inlineNotice.style.display = 'block';
+                return;
+            }
+
+            loadingContainer.style.display = 'block';
 
             try {
                 const response = await fetch(`${API_URL}?q=${encodeURIComponent(query)}`);
@@ -445,7 +502,9 @@
                         displayList(searchResults);
                     }
                 } else {
-                    alert("Tiada data ditemui untuk carian tersebut.");
+                    inlineNotice.innerText = "TIADA REKOD DITEMUI";
+                    inlineNotice.classList.add('inline-danger');
+                    inlineNotice.style.display = 'block';
                 }
             } catch (error) {
                 loadingContainer.style.display = 'none';
@@ -454,8 +513,6 @@
                 // Show on-screen error for better mobile debugging
                 errorContainer.style.display = 'block';
                 errorText.innerText = "Gagal menghubungi pangkalan data. " + error.message;
-
-                alert("Ralat sambungan database. Sila pastikan anda mempunyai akses internet dan menggunakan pautan tapak web yang betul.");
             }
         }
 
